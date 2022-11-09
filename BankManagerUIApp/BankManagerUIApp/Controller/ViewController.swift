@@ -26,17 +26,17 @@ class ViewController: UIViewController {
     
     let addButton: UIButton = {
         let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("고객 10명 추가", for: .normal)
         button.setTitleColor(.systemBlue, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     let clearButton: UIButton = {
         let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("초기화", for: .normal)
         button.setTitleColor(.red, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -49,6 +49,7 @@ class ViewController: UIViewController {
     
     let timerLabel: UILabel = {
         let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "업무시간 - 00:00:000"
         label.font = UIFont.preferredFont(forTextStyle: .title2)
         label.textAlignment = .center
@@ -59,7 +60,30 @@ class ViewController: UIViewController {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
         return stackView
+    }()
+    
+    let waitingLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "대기중"
+        label.textColor = .white
+        label.backgroundColor = .systemGreen
+        label.font = UIFont.preferredFont(forTextStyle: .largeTitle)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    let processingLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "업무중"
+        label.textColor = .white
+        label.backgroundColor = .systemIndigo
+        label.font = UIFont.preferredFont(forTextStyle: .largeTitle)
+        label.textAlignment = .center
+        return label
     }()
     
     let queueStackView: UIStackView = {
@@ -86,6 +110,9 @@ class ViewController: UIViewController {
         buttonStackView.addArrangedSubview(clearButton)
         
         timerStackView.addArrangedSubview(timerLabel)
+        
+        queueStateStackView.addArrangedSubview(waitingLabel)
+        queueStateStackView.addArrangedSubview(processingLabel)
     }
     
     private func setupUIConstraints() {
