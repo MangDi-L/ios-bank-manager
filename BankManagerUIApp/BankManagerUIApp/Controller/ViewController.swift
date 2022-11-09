@@ -12,9 +12,10 @@ class ViewController: UIViewController {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
-        stackView.spacing = 8
+        stackView.spacing = 16
         return stackView
     }()
+    
     let buttonStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -22,6 +23,7 @@ class ViewController: UIViewController {
         stackView.distribution = .fillEqually
         return stackView
     }()
+    
     let addButton: UIButton = {
         let button = UIButton()
         button.setTitle("고객 10명 추가", for: .normal)
@@ -29,6 +31,7 @@ class ViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
     let clearButton: UIButton = {
         let button = UIButton()
         button.setTitle("초기화", for: .normal)
@@ -42,6 +45,14 @@ class ViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         return stackView
+    }()
+    
+    let timerLabel: UILabel = {
+        let label = UILabel()
+        label.text = "업무시간 - 00:00:000"
+        label.font = UIFont.preferredFont(forTextStyle: .title2)
+        label.textAlignment = .center
+        return label
     }()
     
     let queueStateStackView: UIStackView = {
@@ -73,6 +84,8 @@ class ViewController: UIViewController {
         
         buttonStackView.addArrangedSubview(addButton)
         buttonStackView.addArrangedSubview(clearButton)
+        
+        timerStackView.addArrangedSubview(timerLabel)
     }
     
     private func setupUIConstraints() {
