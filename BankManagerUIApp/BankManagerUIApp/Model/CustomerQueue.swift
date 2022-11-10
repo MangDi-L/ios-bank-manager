@@ -39,12 +39,11 @@ struct CustomerQueue<T> {
     
     mutating func takeAll() -> [T?] {
         var customers: [T?] = []
-        var data: Node<T>?
-        data = front
+        var data = front
         
         while data != nil {
             customers.append(data?.data)
-            data = front?.next
+            data = data?.next
         }
         return customers
     }
