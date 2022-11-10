@@ -1,8 +1,8 @@
 //
 //  BankManagerUIApp - ViewController.swift
-//  Created by yagom. 
+//  Created by yagom.
 //  Copyright © yagom academy. All rights reserved.
-// 
+//
 
 import UIKit
 
@@ -141,12 +141,12 @@ class ViewController: UIViewController {
         return label
     }()
     
-    private let group = DispatchGroup()
     private let depositSemaphore = DispatchSemaphore(value: 2)
     private let loanSemaphore = DispatchSemaphore(value: 1)
+    private let group = DispatchGroup()
     var customerQueue = CustomerQueue<Customer>()
-    var waitingNumber: Int = 1
     var kbBank: Bank?
+    var waitingNumber: Int = 1
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -190,7 +190,6 @@ class ViewController: UIViewController {
                 requestingTask: .init(rawValue: Int.random(in: 1...2)) ?? .deposit
             )
             customerQueue.enqueue(data: customer)
-            displayWaitingCustomers()
             waitingNumber += 1
         }
     }
@@ -204,23 +203,28 @@ class ViewController: UIViewController {
             }
         }
         group.wait()
+        
     }
     
     private func processTask(to banker: DispatchSemaphore,
                              for customer: Customer) {
-        DispatchQueue.global().async(group: group) {
+        DispatchQueue.global().async(group: group) { [self] in
             banker.wait()
             DispatchQueue.global().sync {
-                print("\(customer.waitingNumber)번 고객 \(customer.requestingTask.name) 업무 시작")
-                if customer.requestingTask == .deposit {
-                    Thread.sleep(forTimeInterval: 0.7)
-                } else {
-                    Thread.sleep(forTimeInterval: 1.1)
-                }
-                print("\(customer.waitingNumber)번 고객 \(customer.requestingTask.name) 업무 완료")
+                processCustomerRequest(customer)
             }
             banker.signal()
         }
+    }
+    
+    private func processCustomerRequest(_ customer: Customer) {
+        print("\(customer.waitingNumber)번 고객 \(customer.requestingTask.name) 업무 시작")
+        if customer.requestingTask == .deposit {
+            usleep(700000)
+        } else {
+            usleep(1100000)
+        }
+        print("\(customer.waitingNumber)번 고객 \(customer.requestingTask.name) 업무 완료")
     }
     
     private func displayWaitingCustomers() {
