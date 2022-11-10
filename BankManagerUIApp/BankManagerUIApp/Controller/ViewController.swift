@@ -109,23 +109,6 @@ class ViewController: UIViewController {
         return stackView
     }()
     
-    let depositLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "0-예금"
-        label.font = UIFont.preferredFont(forTextStyle: .title2)
-        return label
-    }()
-    
-    let loanLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "0-대출"
-        label.font = UIFont.preferredFont(forTextStyle: .title2)
-        label.textColor = .systemPurple
-        return label
-    }()
-    
     let processingScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -148,7 +131,7 @@ class ViewController: UIViewController {
         label.font = UIFont.preferredFont(forTextStyle: .title2)
         return label
     }()
-
+    
     let loanLabel2: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -176,17 +159,24 @@ class ViewController: UIViewController {
         guard let customers = kbBank?.customerQueue.takeAll() else { return }
         customers.forEach { customer in
             guard let customer = customer else { return }
-            let waitingCustomerLabel: UILabel = {
-                let label = UILabel()
-                label.translatesAutoresizingMaskIntoConstraints = false
-                label.text = "\(customer.waitingNumber)-\(customer.requestingTask.name)"
-                label.font = UIFont.preferredFont(forTextStyle: .title2)
-                return label
-            }()
-            waitingStackView.addArrangedSubview(waitingCustomerLabel)
+            waitingStackView.addArrangedSubview(makeCustomerLabel(customer: customer))
         }
     }
-
+    
+    func makeCustomerLabel(customer: Customer) -> UILabel {
+        let customerLabel: UILabel = {
+            let label = UILabel()
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.text = "\(customer.waitingNumber)-\(customer.requestingTask.name)"
+            label.font = UIFont.preferredFont(forTextStyle: .title2)
+            if customer.requestingTask == .loan {
+                label.textColor = .systemPurple
+            }
+            return label
+        }()
+        return customerLabel
+    }
+    
     private func addSubview() {
         self.view.addSubview(mainStackView)
         mainStackView.addArrangedSubview(buttonStackView)
@@ -206,8 +196,6 @@ class ViewController: UIViewController {
         queueStackView.addArrangedSubview(processingScrollView)
         
         waitingScrollView.addSubview(waitingStackView)
-        waitingStackView.addArrangedSubview(depositLabel)
-        waitingStackView.addArrangedSubview(loanLabel)
         
         processingScrollView.addSubview(processingStackView)
         processingStackView.addArrangedSubview(depositLabel2)
