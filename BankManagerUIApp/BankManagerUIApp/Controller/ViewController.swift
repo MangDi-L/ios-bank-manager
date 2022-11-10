@@ -142,20 +142,38 @@ class ViewController: UIViewController {
     }()
     
     let customerQueue = CustomerQueue<Customer>()
-    var kbBank: Bank? = nil
+    var kbBank: Bank?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         addSubview()
         setupUIConstraints()
         
-        kbBank = Bank(customerQueue: customerQueue)
-        kbBank?.addTenCustomer()
-        displayWaitingCustomers()
+        addButton.addTarget(self, action: #selector(addTenCustomerButton), for: .touchUpInside)
+        clearButton.addTarget(self, action: #selector(allClearButton), for: .touchUpInside)
         
+        kbBank = Bank(customerQueue: customerQueue)
     }
     
-    func displayWaitingCustomers() {
+    @objc func addTenCustomerButton(sender: UIButton) {
+        waitingStackView.subviews.forEach { $0.removeFromSuperview() }
+        kbBank?.addTenCustomer()
+        displayWaitingCustomers()
+        kbBank?.allocateCustomer()
+    }
+    
+    @objc func allClearButton(sender: UIButton) {
+        kbBank?.resetAll()
+        for view in waitingStackView.subviews {
+            view.removeFromSuperview()
+        }
+        for view in processingStackView.subviews {
+            view.removeFromSuperview()
+        }
+        timerLabel.text = "업무시간 - 00:00:000"
+    }
+    
+    private func displayWaitingCustomers() {
         guard let customers = kbBank?.customerQueue.takeAll() else { return }
         customers.forEach { customer in
             guard let customer = customer else { return }
@@ -163,7 +181,7 @@ class ViewController: UIViewController {
         }
     }
     
-    func makeCustomerLabel(customer: Customer) -> UILabel {
+    private func makeCustomerLabel(customer: Customer) -> UILabel {
         let customerLabel: UILabel = {
             let label = UILabel()
             label.translatesAutoresizingMaskIntoConstraints = false

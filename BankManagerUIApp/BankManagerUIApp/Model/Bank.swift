@@ -69,10 +69,11 @@ struct Bank {
     
     mutating func resetAll() {
         customerQueue.clear()
+        waitingNumber = 1
         //타이머 초기화 여기에 구현
     }
     
-    private mutating func allocateCustomer() {
+    mutating func allocateCustomer() {
             checkTime {
             while let customer = customerQueue.dequeue() {
                 if customer.requestingTask == .deposit {
