@@ -202,8 +202,6 @@ class ViewController: UIViewController {
                 processTask(to: loanSemaphore, for: customer)
             }
         }
-        group.wait()
-        
     }
     
     private func processTask(to banker: DispatchSemaphore,
@@ -220,9 +218,9 @@ class ViewController: UIViewController {
     private func processCustomerRequest(_ customer: Customer) {
         print("\(customer.waitingNumber)번 고객 \(customer.requestingTask.name) 업무 시작")
         if customer.requestingTask == .deposit {
-            usleep(700000)
+            Thread.sleep(forTimeInterval: 0.7)
         } else {
-            usleep(1100000)
+            Thread.sleep(forTimeInterval: 1.1)
         }
         print("\(customer.waitingNumber)번 고객 \(customer.requestingTask.name) 업무 완료")
     }
