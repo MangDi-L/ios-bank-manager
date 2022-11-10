@@ -8,11 +8,12 @@
 import Foundation
 
 struct Bank {
-    let numberOfCustomer: Int
+    let numberOfCustomer = 0
     private let group = DispatchGroup()
     private let depositSemaphore = DispatchSemaphore(value: 2)
     private let loanSemaphore = DispatchSemaphore(value: 1)
     var customerQueue: CustomerQueue<Customer>
+    var waitingNumber: Int = 1
     
     mutating func openUp() {
         selectMenu()
@@ -48,6 +49,17 @@ struct Bank {
                 requestingTask: .init(rawValue: Int.random(in: 1...2)) ?? .deposit
             )
             customerQueue.enqueue(data: customer)
+        }
+    }
+    
+    mutating func addTenCustomer() {
+        for _ in 1...10 {
+            let customer: Customer = Customer(
+                waitingNumber: waitingNumber,
+                requestingTask: .init(rawValue: Int.random(in: 1...2)) ?? .deposit
+            )
+            customerQueue.enqueue(data: customer)
+            waitingNumber += 1
         }
     }
     

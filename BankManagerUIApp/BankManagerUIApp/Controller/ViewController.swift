@@ -158,11 +158,17 @@ class ViewController: UIViewController {
         return label
     }()
     
+    let customerQueue = CustomerQueue<Customer>()
+    var kbBank: Bank? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        kbBank = Bank(customerQueue: customerQueue)
+
         addSubview()
         setupUIConstraints()
     }
+    
     
     private func addSubview() {
         self.view.addSubview(mainStackView)
