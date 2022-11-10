@@ -141,7 +141,11 @@ class ViewController: UIViewController {
         return label
     }()
     
-    let customerQueue = CustomerQueue<Customer>()
+    private let group = DispatchGroup()
+    private let depositSemaphore = DispatchSemaphore(value: 2)
+    private let loanSemaphore = DispatchSemaphore(value: 1)
+    var customerQueue = CustomerQueue<Customer>()
+    var waitingNumber: Int = 1
     var kbBank: Bank?
     
     override func viewDidLoad() {
@@ -157,13 +161,13 @@ class ViewController: UIViewController {
     
     @objc func addTenCustomerButton(sender: UIButton) {
         waitingStackView.subviews.forEach { $0.removeFromSuperview() }
-        kbBank?.addTenCustomer()
+        addTenCustomer()
         displayWaitingCustomers()
-        kbBank?.allocateCustomer()
+        allocateCustomer()
     }
     
     @objc func allClearButton(sender: UIButton) {
-        kbBank?.resetAll()
+        resetAll()
         for view in waitingStackView.subviews {
             view.removeFromSuperview()
         }
@@ -173,8 +177,54 @@ class ViewController: UIViewController {
         timerLabel.text = "업무시간 - 00:00:000"
     }
     
+    private func resetAll() {
+        customerQueue.clear()
+        waitingNumber = 1
+        //타이머 초기화 여기에 구현
+    }
+    
+    private func addTenCustomer() {
+        for _ in 1...10 {
+            let customer: Customer = Customer(
+                waitingNumber: waitingNumber,
+                requestingTask: .init(rawValue: Int.random(in: 1...2)) ?? .deposit
+            )
+            customerQueue.enqueue(data: customer)
+            displayWaitingCustomers()
+            waitingNumber += 1
+        }
+    }
+    
+    private func allocateCustomer() {
+        while let customer = customerQueue.dequeue() {
+            if customer.requestingTask == .deposit {
+                processTask(to: depositSemaphore, for: customer)
+            } else {
+                processTask(to: loanSemaphore, for: customer)
+            }
+        }
+        group.wait()
+    }
+    
+    private func processTask(to banker: DispatchSemaphore,
+                             for customer: Customer) {
+        DispatchQueue.global().async(group: group) {
+            banker.wait()
+            DispatchQueue.global().sync {
+                print("\(customer.waitingNumber)번 고객 \(customer.requestingTask.name) 업무 시작")
+                if customer.requestingTask == .deposit {
+                    Thread.sleep(forTimeInterval: 0.7)
+                } else {
+                    Thread.sleep(forTimeInterval: 1.1)
+                }
+                print("\(customer.waitingNumber)번 고객 \(customer.requestingTask.name) 업무 완료")
+            }
+            banker.signal()
+        }
+    }
+    
     private func displayWaitingCustomers() {
-        guard let customers = kbBank?.customerQueue.takeAll() else { return }
+        let customers = customerQueue.takeAll()
         customers.forEach { customer in
             guard let customer = customer else { return }
             waitingStackView.addArrangedSubview(makeCustomerLabel(customer: customer))
