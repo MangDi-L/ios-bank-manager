@@ -36,4 +36,16 @@ struct CustomerQueue<T> {
         front = nil
         rear = nil
     }
+    
+    mutating func takeAll() -> [T?] {
+        var customers: [T?] = []
+        var data: Node<T>?
+        data = front
+        
+        while data != nil {
+            customers.append(data?.data)
+            data = front?.next
+        }
+        return customers
+    }
 }

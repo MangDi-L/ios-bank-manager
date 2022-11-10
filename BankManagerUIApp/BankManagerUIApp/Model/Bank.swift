@@ -13,7 +13,7 @@ struct Bank {
     private let depositSemaphore = DispatchSemaphore(value: 2)
     private let loanSemaphore = DispatchSemaphore(value: 1)
     var customerQueue: CustomerQueue<Customer>
-    private var waitingNumber: Int = 1
+    var waitingNumber: Int = 1
     
     mutating func openUp() {
         selectMenu()
@@ -65,6 +65,11 @@ struct Bank {
     
     mutating func resetWaitingNumber() {
         waitingNumber = 1
+    }
+    
+    mutating func resetAll() {
+        customerQueue.clear()
+        //타이머 초기화 여기에 구현
     }
     
     private mutating func allocateCustomer() {

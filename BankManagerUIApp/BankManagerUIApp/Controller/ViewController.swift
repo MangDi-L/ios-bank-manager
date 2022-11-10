@@ -163,13 +163,29 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        kbBank = Bank(customerQueue: customerQueue)
-
         addSubview()
         setupUIConstraints()
+        
+        kbBank = Bank(customerQueue: customerQueue)
+        kbBank?.addTenCustomer()
+//        displayCustomers()
+        
     }
-    
-    
+//    
+//    func displayCustomers() {
+//        guard let customers = kbBank?.customerQueue.takeAll() else { return }
+//        customers.forEach { customer in
+//        let waitingCustomerLabel: UILabel = {
+//                let label = UILabel()
+//                label.translatesAutoresizingMaskIntoConstraints = false
+//                label.text = "\(customer.waitingNumber)-\(customer.requestingTask.name)"
+//                label.font = UIFont.preferredFont(forTextStyle: .title2)
+//                return label
+//            }()
+//            waitingStackView.addArrangedSubview(waitingCustomerLabel)
+//        }
+//    }
+
     private func addSubview() {
         self.view.addSubview(mainStackView)
         mainStackView.addArrangedSubview(buttonStackView)
