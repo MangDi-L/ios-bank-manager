@@ -124,23 +124,6 @@ class ViewController: UIViewController {
         return stackView
     }()
     
-    let depositLabel2: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "0-예금"
-        label.font = UIFont.preferredFont(forTextStyle: .title2)
-        return label
-    }()
-    
-    let loanLabel2: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "0-대출"
-        label.font = UIFont.preferredFont(forTextStyle: .title2)
-        label.textColor = .systemPurple
-        return label
-    }()
-    
     private let depositSemaphore = DispatchSemaphore(value: 2)
     private let loanSemaphore = DispatchSemaphore(value: 1)
     private let group = DispatchGroup()
@@ -216,6 +199,13 @@ class ViewController: UIViewController {
     }
     
     private func processCustomerRequest(_ customer: Customer) {
+        DispatchQueue.main.sync {
+            for view in waitingStackView.arrangedSubviews where view.tag == customer.waitingNumber {
+                processingStackView.addArrangedSubview(view)
+                waitingStackView.removeArrangedSubview(view)
+            }
+        }
+        
         print("\(customer.waitingNumber)번 고객 \(customer.requestingTask.name) 업무 시작")
         if customer.requestingTask == .deposit {
             Thread.sleep(forTimeInterval: 0.7)
@@ -223,6 +213,12 @@ class ViewController: UIViewController {
             Thread.sleep(forTimeInterval: 1.1)
         }
         print("\(customer.waitingNumber)번 고객 \(customer.requestingTask.name) 업무 완료")
+        
+        DispatchQueue.main.sync {
+            for view in processingStackView.arrangedSubviews where view.tag == customer.waitingNumber {
+                view.removeFromSuperview()
+            }
+        }
     }
     
     private func displayWaitingCustomers() {
@@ -237,6 +233,7 @@ class ViewController: UIViewController {
         let customerLabel: UILabel = {
             let label = UILabel()
             label.translatesAutoresizingMaskIntoConstraints = false
+            label.tag = customer.waitingNumber
             label.text = "\(customer.waitingNumber)-\(customer.requestingTask.name)"
             label.font = UIFont.preferredFont(forTextStyle: .title2)
             if customer.requestingTask == .loan {
@@ -268,8 +265,6 @@ class ViewController: UIViewController {
         waitingScrollView.addSubview(waitingStackView)
         
         processingScrollView.addSubview(processingStackView)
-        processingStackView.addArrangedSubview(depositLabel2)
-        processingStackView.addArrangedSubview(loanLabel2)
     }
     
     private func setupUIConstraints() {
